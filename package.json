@@ -1,0 +1,24 @@
+{
+    "name": "oauth2-frontend",
+    "version": "1.0.0",
+    "description": "Simple OAuth 2.0 frontend implementation with TypeScript",
+    "main": "dist/app.js",
+    "scripts": {
+        "build": "tsc",
+        "watch": "tsc --watch",
+        "serve": "python3 -m http.server 4040",
+        "dev": "tsc --watch & python3 -m http.server 4040"
+    },
+    "keywords": [
+        "oauth2",
+        "typescript",
+        "frontend",
+        "authentication"
+    ],
+    "author": "",
+    "license": "MIT",
+    "devDependencies": {
+        "typescript": "^5.0.0"
+    },
+    "dependencies": {}
+}

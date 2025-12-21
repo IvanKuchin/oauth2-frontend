@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OAuth 2.0 Demo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .auth-section {
+            background-color: #f5f5f5;
+        }
+
+        .api-section {
+            background-color: #e8f4f8;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        button:disabled {
+            background-color: #6c757d;
+            cursor: not-allowed;
+        }
+
+        .logout-btn {
+            background-color: #dc3545;
+        }
+
+        .logout-btn:hover {
+            background-color: #c82333;
+        }
+
+        .response {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            padding: 10px;
+            margin-top: 10px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        .success {
+            border-color: #28a745;
+            background-color: #d4edda;
+        }
+
+        .error {
+            border-color: #dc3545;
+            background-color: #f8d7da;
+        }
+
+        .status {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .authenticated {
+            color: #28a745;
+        }
+
+        .not-authenticated {
+            color: #dc3545;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>OAuth 2.0 Frontend Demo</h1>
+
+    <div class="container auth-section">
+        <h2>Authentication</h2>
+        <div class="status" id="authStatus">Not Authenticated</div>
+        <button id="loginBtn">Login with OAuth 2.0</button>
+        <button id="logoutBtn" style="display: none;">Logout</button>
+        <div id="tokenInfo" class="response" style="display: none;"></div>
+    </div>
+
+    <div class="container api-section">
+        <h2>API Endpoints</h2>
+        <div>
+            <h3>Public API Call</h3>
+            <button id="publicApiBtn">Call /api/v1/public</button>
+            <div id="publicResponse" class="response" style="display: none;"></div>
+        </div>
+
+        <div>
+            <h3>Protected API Call</h3>
+            <button id="protectedApiBtn" disabled>Call /api/v1/protected</button>
+            <div id="protectedResponse" class="response" style="display: none;"></div>
+        </div>
+
+        <div>
+            <h3>Admin API Call</h3>
+            <button id="adminApiBtn" disabled>Call /api/v1/admin</button>
+            <div id="adminResponse" class="response" style="display: none;"></div>
+        </div>
+    </div>
+
+    <script type="module" src="dist/app.js"></script>
+</body>
+
+</html>

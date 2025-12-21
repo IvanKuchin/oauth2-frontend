@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  oauth2-frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "4040:4040"
+    environment:
+      - PORT=4040
+    volumes:
+      # Mount source files for development (optional)
+      - ./src:/app/src:ro
+      - ./index.html:/app/index.html:ro
+    restart: unless-stopped
+    container_name: oauth2-frontend
