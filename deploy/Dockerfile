@@ -17,71 +17,83 @@ COPY src/ ./src/
 # Build TypeScript
 RUN npm run build
 
-# Use a lightweight Python image for serving static files
-FROM python:3.11-alpine
-
-# Set working directory
-WORKDIR /app
+# Use Nginx Alpine for serving static files
+FROM nginx:alpine
 
 # Copy built files and static assets
-COPY --from=builder /app/dist/ ./dist/
-COPY index.html ./
-COPY package.json ./
+COPY --from=builder /app/dist/ /usr/share/nginx/html/dist/
+COPY index.html /usr/share/nginx/html/
 
-# Create a simple callback handler
-RUN echo '<!DOCTYPE html>\n<html><head><title>OAuth Callback</title></head><body><script>window.location.href="/";</script></body></html>' > callback.html
+# Create Nginx configuration for SPA routing
+RUN cat > /etc/nginx/conf.d/default.conf << 'EOF'
+server {
+listen 4040;
+listen [::]:4040;
+server_name localhost;
+root /usr/share/nginx/html;
+index index.html;
 
-# Create a simple Python server script that handles routing
-RUN cat > server.py << 'EOF'
-#!/usr/bin/env python3
-import http.server
-import socketserver
-import os
-from urllib.parse import urlparse
+# Enable gzip compression
+gzip on;
+gzip_vary on;
+gzip_min_length 1024;
+gzip_proxied any;
+gzip_comp_level 6;
+gzip_types
+text/plain
+text/css
+text/xml
+text/javascript
+application/javascript
+application/xml+rss
+application/json;
 
-class CustomHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
-def do_GET(self):
-parsed_path = urlparse(self.path)
+# Security headers
+add_header X-Frame-Options "SAMEORIGIN" always;
+add_header X-Content-Type-Options "nosniff" always;
+add_header X-XSS-Protection "1; mode=block" always;
+add_header Referrer-Policy "no-referrer-when-downgrade" always;
 
-# Handle callback route
-if parsed_path.path == '/callback':
-# Serve index.html for callback route (SPA behavior)
-self.path = '/index.html'
-elif parsed_path.path == '/':
-self.path = '/index.html'
-elif not os.path.exists('.' + parsed_path.path):
-# For any other route that doesn't exist, serve index.html (SPA fallback)
-self.path = '/index.html'
+# CORS headers for API calls
+add_header Access-Control-Allow-Origin "*" always;
+add_header Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS" always;
+add_header Access-Control-Allow-Headers "Accept, Authorization, Cache-Control, Content-Type, DNT, If-Modified-Since, Keep-Alive, Origin, User-Agent, X-Requested-With" always;
 
-return super().do_GET()
+# Handle preflight OPTIONS requests
+location / {
+if ($request_method = 'OPTIONS') {
+add_header Access-Control-Allow-Origin "*" always;
+add_header Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS" always;
+add_header Access-Control-Allow-Headers "Accept, Authorization, Cache-Control, Content-Type, DNT, If-Modified-Since, Keep-Alive, Origin, User-Agent, X-Requested-With" always;
+add_header Access-Control-Max-Age 1728000;
+add_header Content-Type "text/plain; charset=utf-8";
+add_header Content-Length 0;
+return 204;
+}
 
-def end_headers(self):
-# Add CORS headers for development
-self.send_header('Access-Control-Allow-Origin', '*')
-self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
-self.send_header('Access-Control-Allow-Headers', 'Content-Type, Authorization')
-super().end_headers()
+try_files $uri $uri/ /index.html;
+}
 
-def do_OPTIONS(self):
-self.send_response(200)
-self.end_headers()
+# Handle callback route (SPA routing)
+location /callback {
+try_files $uri $uri/ /index.html;
+}
 
-if __name__ == '__main__':
-PORT = int(os.environ.get('PORT', 4040))
+# Cache static assets
+location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg)$ {
+expires 1y;
+add_header Cache-Control "public, immutable";
+}
 
-with socketserver.TCPServer(("", PORT), CustomHTTPRequestHandler) as httpd:
-print(f"Serving at http://localhost:{PORT}")
-httpd.serve_forever()
+# Security: Don't serve hidden files
+location ~ /\. {
+deny all;
+}
+}
 EOF
-
-# Make the server script executable
-RUN chmod +x server.py
 
 # Expose port
 EXPOSE 4040
 
-# Set environment variable for port
-ENV PORT=4040
-
-# Run the server
-CMD ["python3", "server.py"]
+# Start Nginx
+CMD ["nginx", "-g", "daemon off;"]
