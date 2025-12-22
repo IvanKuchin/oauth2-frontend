@@ -90,6 +90,11 @@
         .not-authenticated {
             color: #dc3545;
         }
+
+        .href_class::after {
+            content: " (" attr(href) ")";
+            font-size: 0.9em;
+        }
     </style>
 </head>
 
@@ -124,6 +129,8 @@
             <div id="adminResponse" class="response" style="display: none;"></div>
         </div>
     </div>
+
+    <a href="https://www.google.com" class="href_class">test link</a>
 
     <script type="module" src="dist/app.js"></script>
 </body>
