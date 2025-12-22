@@ -28,12 +28,10 @@ export class OAuth2Client {
      * Generate a random string for PKCE code verifier and state
      */
     private generateRandomString(length: number): string {
-        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~';
-        let result = '';
-        for (let i = 0; i < length; i++) {
-            result += chars.charAt(Math.floor(Math.random() * chars.length));
-        }
-        return result;
+        const array = new Uint8Array(length);
+        crypto.getRandomValues(array);
+        let result = Array.from(array, byte => (byte.toString(16)).padStart(2, '_')).join('');
+        return result.slice(0, length);
     }
 
     /**
