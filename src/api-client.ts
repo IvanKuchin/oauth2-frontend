@@ -60,8 +60,8 @@ export class ApiClient {
         } catch (error) {
             return {
                 error: error instanceof Error ? error.message : 'Network error',
-                status: 0,
-                message: 'Request failed'
+                status: 503,
+                message: 'Service unavailable (network error)'
             };
         }
     }
