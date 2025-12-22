@@ -79,36 +79,42 @@ export class OAuth2Client {
      * Handle the callback from the authorization server
      */
     async handleCallback(): Promise<boolean> {
-        const urlParams = new URLSearchParams(window.location.search);
-        const code = urlParams.get('code');
-        const state = urlParams.get('state');
-        const error = urlParams.get('error');
+        try {
+            const urlParams = new URLSearchParams(window.location.search);
+            const code = urlParams.get('code');
+            const state = urlParams.get('state');
+            const error = urlParams.get('error');
 
-        if (error) {
-            console.error('OAuth error:', error);
-            throw new Error(`OAuth error: ${error}`);
+            if (error) {
+                console.error('OAuth error:', error);
+                throw new Error(`OAuth error: ${error}`);
+            }
+
+            if (!code) {
+                throw new Error('Missing authorization code parameter');
+            }
+
+            if (!state) {
+                throw new Error('Missing state parameter');
+            }
+
+            const storedState = sessionStorage.getItem('oauth_state');
+            if (state !== storedState) {
+                throw new Error('Invalid state parameter');
+            }
+
+            const codeVerifier = sessionStorage.getItem('oauth_code_verifier');
+            if (!codeVerifier) {
+                throw new Error('Missing code verifier');
+            }
+
+            // Exchange code for token
+            return await this.exchangeCodeForToken(code, codeVerifier);
+        } finally {
+            // Clean up session storage regardless of success/failure
+            sessionStorage.removeItem('oauth_state');
+            sessionStorage.removeItem('oauth_code_verifier');
         }
-
-        if (!code || !state) {
-            throw new Error('Missing authorization code or state parameter');
-        }
-
-        const storedState = sessionStorage.getItem('oauth_state');
-        if (state !== storedState) {
-            throw new Error('Invalid state parameter');
-        }
-
-        const codeVerifier = sessionStorage.getItem('oauth_code_verifier');
-        if (!codeVerifier) {
-            throw new Error('Missing code verifier');
-        }
-
-        // Clean up session storage
-        sessionStorage.removeItem('oauth_state');
-        sessionStorage.removeItem('oauth_code_verifier');
-
-        // Exchange code for token
-        return await this.exchangeCodeForToken(code, codeVerifier);
     }
 
     /**
