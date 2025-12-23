@@ -34,7 +34,7 @@ export class ApiClient {
         };
 
         if (requiresAuth && this.accessToken) {
-            (headers as Record<string, string>)['Authorization'] = `Bearer: ${this.accessToken}`;
+            (headers as Record<string, string>)['Authorization'] = `Bearer ${this.accessToken}`;
         }
 
         try {
