@@ -18,21 +18,28 @@ class OAuth2App {
     private adminResponse!: HTMLElement;
 
     constructor() {
+        let baseUrl = window.location.hostname.includes("localhost") ? "http://localhost:6060" : "https://production-url.com";
+
         // OAuth 2.0 configuration
         const authConfig: AuthConfig = {
             clientId: 'demo-client-id',
             redirectUri: `${window.location.origin}/callback`,
+            baseUrl: baseUrl,
             authorizationEndpoint: '/api/v1/oauth2/authorize',
             tokenEndpoint: '/api/v1/oauth2/token',
             scope: 'read write admin'
         };
 
         this.oauth2Client = new OAuth2Client(authConfig);
-        this.apiClient = new ApiClient();
-
+        this.apiClient = new ApiClient(baseUrl);
         this.initializeDOM();
         this.setupEventListeners();
-        this.handleInitialLoad();
+        this.handleInitialLoad().catch(error => {
+            console.error('Failed to handle initial load:', error);
+            this.showMessage(`Initialization failed: ${error}`, 'error');
+        });
+
+        this.showMessage('App initialized', 'success');
     }
 
     /**
@@ -257,6 +264,7 @@ class OAuth2App {
         this.adminResponse.style.display = 'none';
     }
 }
+
 
 // Initialize the app when the DOM is loaded
 document.addEventListener('DOMContentLoaded', () => new OAuth2App());

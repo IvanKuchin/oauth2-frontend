@@ -9,7 +9,7 @@ export class ApiClient {
     private baseUrl: string;
     private accessToken: string | null = null;
 
-    constructor(baseUrl: string = '') {
+    constructor(baseUrl: string) {
         this.baseUrl = baseUrl;
     }
 

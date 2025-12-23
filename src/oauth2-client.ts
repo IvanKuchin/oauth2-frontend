@@ -9,6 +9,7 @@ export interface TokenResponse {
 export interface AuthConfig {
     clientId: string;
     redirectUri: string;
+    baseUrl: string;
     authorizationEndpoint: string;
     tokenEndpoint: string;
     scope?: string;
@@ -71,7 +72,7 @@ export class OAuth2Client {
             scope: this.config.scope || 'read'
         });
 
-        const authUrl = `${this.config.authorizationEndpoint}?${params.toString()}`;
+        const authUrl = `${this.config.baseUrl}${this.config.authorizationEndpoint}?${params.toString()}`;
         window.location.href = authUrl;
     }
 
