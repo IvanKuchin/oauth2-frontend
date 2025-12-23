@@ -259,13 +259,4 @@ class OAuth2App {
 }
 
 // Initialize the app when the DOM is loaded
-document.addEventListener('DOMContentLoaded', () => {
-    new OAuth2App();
-});
-
-// Handle the callback route
-if (window.location.pathname === '/callback') {
-    document.addEventListener('DOMContentLoaded', () => {
-        new OAuth2App();
-    });
-}
+document.addEventListener('DOMContentLoaded', () => new OAuth2App());
