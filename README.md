@@ -14,7 +14,7 @@ A simple OAuth 2.0 implementation using plain TypeScript (no frameworks) for fro
 
 The application expects the following backend endpoints:
 
-- `POST /api/v1/oauth2/authorize` - OAuth authorization endpoint
+- `GET /api/v1/oauth2/authorize` - OAuth authorization endpoint
 - `POST /api/v1/oauth2/token` - Token exchange endpoint
 - `GET /api/v1/public` - Public API endpoint (no authentication)
 - `GET /api/v1/protected` - Protected API endpoint (requires authentication)
@@ -24,17 +24,21 @@ The application expects the following backend endpoints:
 
 ```
 oauth2-frontend/
+├── .github/
+│   └── copilot-instructions.md # GitHub Copilot instructions
+├── deploy/
+│   ├── Dockerfile              # Docker container configuration
+│   └── docker-compose.yml      # Docker Compose for easy deployment
 ├── src/
-│   ├── app.ts              # Main application logic
-│   ├── oauth2-client.ts    # OAuth 2.0 client implementation
-│   └── api-client.ts       # API client for backend calls
-├── dist/                   # Compiled JavaScript (generated)
-├── index.html              # Main HTML file
-├── package.json            # Node.js dependencies
-├── tsconfig.json           # TypeScript configuration
-├── Dockerfile              # Docker container configuration
-├── docker-compose.yml      # Docker Compose for easy deployment
-└── README.md               # This file
+│   ├── app.ts                  # Main application logic
+│   ├── oauth2-client.ts        # OAuth 2.0 client implementation
+│   └── api-client.ts           # API client for backend calls
+├── dist/                       # Compiled JavaScript (generated)
+├── .gitignore                  # Git ignore rules
+├── index.html                  # Main HTML file
+├── package.json                # Node.js dependencies
+├── tsconfig.json               # TypeScript configuration
+└── README.md                   # This file
 ```
 
 ## Development Setup
@@ -72,13 +76,13 @@ The application will be available at `http://localhost:4040`
 
 1. **Build and run with Docker:**
    ```bash
-   docker build -t oauth2-frontend .
+   docker build -f deploy/Dockerfile -t oauth2-frontend .
    docker run -p 4040:4040 oauth2-frontend
    ```
 
 2. **Or use Docker Compose:**
    ```bash
-   docker-compose up --build
+   docker-compose -f deploy/docker-compose.yml up --build
    ```
 
 The application will be available at `http://localhost:4040`
@@ -92,7 +96,7 @@ The application will be available at `http://localhost:4040`
 
 ## Configuration
 
-OAuth configuration is set in `src/app.ts`:
+OAuth configuration is set in [`src/app.ts`](src/app.ts):
 
 ```typescript
 const authConfig: AuthConfig = {
