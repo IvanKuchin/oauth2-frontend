@@ -6,8 +6,8 @@
     "scripts": {
         "build": "tsc",
         "watch": "tsc --watch",
-        "serve": "python3 -m http.server 4040",
-        "dev": "tsc --watch & python3 -m http.server 4040"
+        "serve": "http-server -p 4040 -c-1 --proxy http://localhost:4040?",
+        "dev": "tsc --watch & http-server -p 4040 -c-1 --proxy http://localhost:4040?"
     },
     "keywords": [
         "oauth2",
@@ -18,7 +18,8 @@
     "author": "",
     "license": "MIT",
     "devDependencies": {
-        "typescript": "^5.0.0"
+        "typescript": "^5.0.0",
+        "http-server": "^14.1.1"
     },
     "dependencies": {}
 }

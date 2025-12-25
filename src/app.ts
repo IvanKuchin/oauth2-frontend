@@ -18,7 +18,7 @@ class OAuth2App {
     private adminResponse!: HTMLElement;
 
     constructor() {
-        let baseUrl = window.location.hostname.includes("localhost") ? "http://localhost:6060" : "https://production-url.com";
+        let baseUrl = window.location.hostname.includes("localhost") ? "http://localhost:8080" : "https://production-url.com";
 
         // OAuth 2.0 configuration
         const authConfig: AuthConfig = {
