@@ -4,6 +4,7 @@ export interface TokenResponse {
     expires_in?: number;
     refresh_token?: string;
     scope?: string;
+    id_token?: string;
 }
 
 export interface AuthConfig {
@@ -15,10 +16,28 @@ export interface AuthConfig {
     scope?: string;
 }
 
+export interface IdToken {
+    given_name: string;
+    family_name: string;
+    nickname: string;
+    name: string;
+    picture: string;
+    updated_at: string;
+    email: string;
+    email_verified: boolean;
+    iss: string;
+    aud: string;
+    sub: string;
+    iat: number;
+    exp: number;
+    sid: string;
+}
+
 export class OAuth2Client {
     private config: AuthConfig;
     private accessToken: string | null = null;
     private refreshToken: string | null = null;
+    private idToken: string | null = null;
 
     constructor(config: AuthConfig) {
         this.config = config;
@@ -148,6 +167,7 @@ export class OAuth2Client {
 
             this.accessToken = tokenResponse.access_token;
             this.refreshToken = tokenResponse.refresh_token || null;
+            this.idToken = tokenResponse.id_token || null;
 
             // Store tokens in localStorage for persistence
             this.saveTokensToStorage(tokenResponse);
@@ -171,6 +191,9 @@ export class OAuth2Client {
             const expiresAt = Date.now() + (tokenResponse.expires_in * 1000);
             localStorage.setItem('token_expires_at', expiresAt.toString());
         }
+        if (tokenResponse.id_token) {
+            localStorage.setItem('id_token', tokenResponse.id_token);
+        }
     }
 
     /**
@@ -179,6 +202,7 @@ export class OAuth2Client {
     private loadTokensFromStorage(): void {
         this.accessToken = localStorage.getItem('access_token');
         this.refreshToken = localStorage.getItem('refresh_token');
+        this.idToken = localStorage.getItem('id_token');
 
         // Check if token is expired
         const expiresAt = localStorage.getItem('token_expires_at');
@@ -230,6 +254,24 @@ export class OAuth2Client {
         return null;
     }
 
+    getIdToken(): IdToken | null {
+        if (!this.idToken) return null;
+
+        try {
+            const payload = this.idToken.split('.')[1];
+            if (payload) {
+                const decoded: IdToken = JSON.parse(atob(payload.replace(/-/g, '+').replace(/_/g, '/')));
+
+                return decoded;
+            }
+
+        } catch (error) {
+            return null;
+        }
+
+        return null;
+    }
+
     /**
      * Logout and clear tokens
      */
@@ -239,6 +281,7 @@ export class OAuth2Client {
         localStorage.removeItem('access_token');
         localStorage.removeItem('refresh_token');
         localStorage.removeItem('token_expires_at');
+        localStorage.removeItem('id_token');
 
         // Clear the URL if we're on callback page
         if (window.location.pathname === '/callback') {

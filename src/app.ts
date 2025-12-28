@@ -10,6 +10,7 @@ class OAuth2App {
     private loginBtn!: HTMLButtonElement;
     private logoutBtn!: HTMLButtonElement;
     private tokenInfo!: HTMLElement;
+    private idTokenInfo!: HTMLElement;
     private publicApiBtn!: HTMLButtonElement;
     private protectedApiBtn!: HTMLButtonElement;
     private adminApiBtn!: HTMLButtonElement;
@@ -50,6 +51,7 @@ class OAuth2App {
         this.loginBtn = document.getElementById('loginBtn') as HTMLButtonElement;
         this.logoutBtn = document.getElementById('logoutBtn') as HTMLButtonElement;
         this.tokenInfo = document.getElementById('tokenInfo')!;
+        this.idTokenInfo = document.getElementById('idTokenInfo')!;
         this.publicApiBtn = document.getElementById('publicApiBtn') as HTMLButtonElement;
         this.protectedApiBtn = document.getElementById('protectedApiBtn') as HTMLButtonElement;
         this.adminApiBtn = document.getElementById('adminApiBtn') as HTMLButtonElement;
@@ -93,6 +95,14 @@ class OAuth2App {
      * Update UI based on authentication state
      */
     private updateUI(): void {
+        this.updateAccessTokenUI();
+        this.updateIdTokenUI();
+    }
+
+    /**
+     * Update UI with access token information
+     */
+    private updateAccessTokenUI(): void {
         const isAuthenticated = this.oauth2Client.isAuthenticated();
         const accessToken = this.oauth2Client.getAccessToken();
 
@@ -115,6 +125,7 @@ class OAuth2App {
             this.loginBtn.style.display = 'inline-block';
             this.logoutBtn.style.display = 'none';
             this.tokenInfo.style.display = 'none';
+            this.idTokenInfo.style.display = 'none';
         }
 
         // Update API client with token
@@ -123,6 +134,26 @@ class OAuth2App {
         // Enable/disable protected API buttons
         this.protectedApiBtn.disabled = !isAuthenticated;
         this.adminApiBtn.disabled = !isAuthenticated;
+    }
+
+    /**
+     * Update UI with identity token information
+     */
+    private updateIdTokenUI(): void {
+        const isAuthenticated = this.oauth2Client.isAuthenticated();
+
+        if (isAuthenticated) {
+            const idToken = this.oauth2Client.getIdToken();
+            if (idToken) {
+                // console.log('ID Token:', idToken);
+                this.idTokenInfo.textContent = JSON.stringify(idToken, null, 2);
+                this.idTokenInfo.style.display = 'block';
+            } else {
+                this.idTokenInfo.style.display = 'none';
+            }
+        } else {
+            this.idTokenInfo.style.display = 'none';
+        }
     }
 
     /**
