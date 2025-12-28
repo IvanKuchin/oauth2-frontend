@@ -131,7 +131,7 @@ export class OAuth2Client {
         });
 
         try {
-            const response = await fetch(this.config.tokenEndpoint, {
+            const response = await fetch(this.config.baseUrl + this.config.tokenEndpoint, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
