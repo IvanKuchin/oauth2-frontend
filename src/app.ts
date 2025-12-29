@@ -11,6 +11,8 @@ class OAuth2App {
     private logoutBtn!: HTMLButtonElement;
     private tokenInfo!: HTMLElement;
     private idTokenInfo!: HTMLElement;
+    private tokenInfoSection!: HTMLElement;
+    private idTokenInfoSection!: HTMLElement;
     private publicApiBtn!: HTMLButtonElement;
     private protectedApiBtn!: HTMLButtonElement;
     private adminApiBtn!: HTMLButtonElement;
@@ -51,7 +53,9 @@ class OAuth2App {
         this.loginBtn = document.getElementById('loginBtn') as HTMLButtonElement;
         this.logoutBtn = document.getElementById('logoutBtn') as HTMLButtonElement;
         this.tokenInfo = document.getElementById('tokenInfo')!;
+        this.tokenInfoSection = document.getElementById('tokenInfoSection')!;
         this.idTokenInfo = document.getElementById('idTokenInfo')!;
+        this.idTokenInfoSection = document.getElementById('idTokenInfoSection')!;
         this.publicApiBtn = document.getElementById('publicApiBtn') as HTMLButtonElement;
         this.protectedApiBtn = document.getElementById('protectedApiBtn') as HTMLButtonElement;
         this.adminApiBtn = document.getElementById('adminApiBtn') as HTMLButtonElement;
@@ -117,15 +121,14 @@ class OAuth2App {
             const tokenInfo = this.oauth2Client.getTokenInfo();
             if (tokenInfo) {
                 this.tokenInfo.textContent = JSON.stringify(tokenInfo, null, 2);
-                this.tokenInfo.style.display = 'block';
+                this.tokenInfoSection.style.display = 'block';
             }
         } else {
             this.authStatus.textContent = 'Not Authenticated';
             this.authStatus.className = 'status not-authenticated';
             this.loginBtn.style.display = 'inline-block';
             this.logoutBtn.style.display = 'none';
-            this.tokenInfo.style.display = 'none';
-            this.idTokenInfo.style.display = 'none';
+            this.tokenInfoSection.style.display = 'none';
         }
 
         // Update API client with token
@@ -147,12 +150,12 @@ class OAuth2App {
             if (idToken) {
                 // console.log('ID Token:', idToken);
                 this.idTokenInfo.textContent = JSON.stringify(idToken, null, 2);
-                this.idTokenInfo.style.display = 'block';
+                this.idTokenInfoSection.style.display = 'block';
             } else {
-                this.idTokenInfo.style.display = 'none';
+                this.idTokenInfoSection.style.display = 'none';
             }
         } else {
-            this.idTokenInfo.style.display = 'none';
+            this.idTokenInfoSection.style.display = 'none';
         }
     }
 
